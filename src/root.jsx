@@ -102,7 +102,7 @@ class WeatherForecast extends React.Component {
 		if(d.cod != '200'){
 			throw Error(d.message);
 		}
-		console.log(d.list);
+
         this.setState({
           cityName: d.city.name,
           weatherList: d.list
@@ -115,29 +115,22 @@ class WeatherForecast extends React.Component {
     return (
     	<div>
     		<p>{this.state.cityName}</p>
-    		<ForecastCard weather={this.state.weatherList[0]}/>
+    		<ForecastCard weatherList={this.state.weatherList[0]}/>
         </div>
     )
   }
 }
 
 class ForecastCard extends React.Component {
-	constructor(props) {
-    	super(props);
-    	this.state = {
-    		temp: 0.0,
-    		chancePrecip: 0.0,
-    		wind: 0.0,
-    		date: '01/01/01'
-    	};
-    }
+
     render() {
     	return (
 	    	<div className="weatherStats">
-	    		{this.props.weather.dt}
-	    		Temperature {this.state.temp}
-	    		Precip {this.state.chancePrecip}%
-	    		Wind {this.state.wind} mph
+	    		{this.props.weatherList.dt}
+	    		<p>Temperature {this.props.weatherList.main.temp}F</p>
+				<p>Low {this.props.weatherList.main.temp_min}F</p>
+				<p>High {this.props.weatherList.main.temp_max}F</p>
+				<p>Wind {this.props.weatherList.weather[0].main}</p>
 	    	</div>
     	)
     }
