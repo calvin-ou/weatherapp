@@ -1,93 +1,15 @@
-// Copyright 2017 Quip
-
-// function getWeatherReport(zipCode) {
-// 	var apiKey = '6b98628d57d009c34b1b18644d38a2df'
-// 	var apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast/?units=imperial&zip=' + zipCode + '&appid=' + apiKey;
-// 	return fetch(apiEndpoint)
-// 	  .then((response) => response.json())
-// 	  .then((responseJson) => {
-// 	  	if(responseJson.cod != '200'){
-// 	  		console.log("Error!" + responseJson.message);
-// 	  	}
-
-// 	    return responseJson;
-// 	  })
-// 	  .catch((error) => {
-// 	    console.error(error);
-// 	  });
-// }
-
-// class WeatherForecast extends React.Component {
-//   constructor(props) {
-//     super(props);
-//     this.state = {
-//       requestFailed: false
-//     }
-//   }
-
-// 	getInitialState() {
-// 	    return {cityList: {reading:[]}};
-// 	}
-
-//   componentDidMount() {
-//   	var apiKey = '6b98628d57d009c34b1b18644d38a2df';
-// 	var apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast/?units=imperial&zip=' + this.props.zipCode + '&appid=' + apiKey;
-
-//     fetch(apiEndpoint)
-//       .then(response => {
-//         if (!response.ok) {
-//           throw Error("Network request failed")
-//         }
-
-//         return response
-//       })
-//       .then(d => d.json())
-//       .then(d => {
-// 		if(d.cod != '200'){
-// 			throw Error(d.message);
-// 		}
-// 		console.log(d.list);
-//         this.setState({
-//           cityName: d.city.name,
-//           cityList: [d.list]
-//         })
-
-//       }, () => {
-//         this.setState({
-//           requestFailed: true
-//         })
-//       })
-//   }
-
-//   render() {
-
-//     if (this.state.requestFailed) return <p>Failed!</p>
-//     // if (this.state.weatherData) return <p>Loading...</p>
-//     return (
-//     	<div>
-// 	        <p>{this.state.cityName}</p>
-// 	        <ul>
-// 		        {this.state.cityList.map((reading) => {
-// 		        	console.log(reading);
-// 		        	// return <ForecastCard dt={result.dt}/>;
-// 		        })}
-// 	        </ul>
-//         </div>
-//     )
-//   }
-// }
-
 class WeatherForecast extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      cityName: '',
       weatherList: [{ weather: [{}], main: {}, wind: {}}]
     }
   }
 
   componentDidMount() {
-  	var apiKey = 'b1d9e085c28cc0b07ab8237469aa0947';
-	var apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast/?units=imperial&zip=' + this.props.zipCode + '&appid=' + apiKey;
+    var apiKey = 'b1d9e085c28cc0b07ab8237469aa0947';
+  var apiEndpoint = 'https://api.openweathermap.org/data/2.5/forecast/?units=imperial&zip=' + this.props.zipCode + '&appid=' + apiKey;
 
     fetch(apiEndpoint)
       .then(response => {
@@ -99,60 +21,60 @@ class WeatherForecast extends React.Component {
       })
       .then(d => d.json())
       .then(d => {
-		if(d.cod != '200'){
-			throw Error(d.message);
-		}
+    if(d.cod != '200'){
+      throw Error(d.message);
+    }
 
         this.setState({
           cityName: d.city.name,
           weatherList: d.list
         })
-
       })
   }
 
   render() {
     return (
-    	<div>
-    		<p>{this.state.cityName}</p>
-    		<ForecastCard weatherList={this.state.weatherList[0]}/>
+      <div>
+        {this.state.weatherList.length > 1 ?
+          <div className="weatherForecast">
+              <h2>Weather Forecast for {this.state.cityName}</h2>
+              <ForecastCard forecast={this.state.weatherList[2]}/>
+              <ForecastCard forecast={this.state.weatherList[10]}/>
+              <ForecastCard forecast={this.state.weatherList[18]}/>
+              <ForecastCard forecast={this.state.weatherList[26]}/>
+              <ForecastCard forecast={this.state.weatherList[34]}/>
+            </div>
+            : <p>Loading...</p>
+          }
         </div>
     )
   }
 }
 
 class ForecastCard extends React.Component {
-
     render() {
-    	return (
-	    	<div className="weatherStats">
-	    		{this.props.weatherList.dt}
-	    		<p>Temperature {this.props.weatherList.main.temp}F</p>
-				<p>Low {this.props.weatherList.main.temp_min}F</p>
-				<p>High {this.props.weatherList.main.temp_max}F</p>
-				<p>Wind {this.props.weatherList.weather[0].main}</p>
-	    	</div>
-    	)
+      return (
+        <div className="forecastCard">
+          <p>{this.props.forecast.dt_txt}</p>
+          <ForecastIcon iconCode={this.props.forecast.weather[0].icon}/>
+          <p>{this.props.forecast.main.temp}&#176; F</p>
+          <p>{this.props.forecast.wind.speed} mph</p>
+        </div>
+      )
     }
 }
 
-class WeatherIcon extends React.Component {
-	constructor(props) {
-    	super(props);
-    	this.state = {
-    		iconCode: '01d'
-    	};
-    }
-}
-
-class Root extends React.Component {
-    render() {
-        return <WeatherForecast zipCode='95070'/>;
-    }
+class ForecastIcon extends React.Component {
+  render(){
+    var imageSource = '/weatherIcons/' + this.props.iconCode + '.png';
+    return (
+      <img src={imageSource}></img>
+    )
+  }
 }
 
 quip.elements.initialize({
     initializationCallback: function(root) {
-        ReactDOM.render(<Root/>, root);
+        ReactDOM.render(<WeatherForecast zipCode='95070'/>, root);
     }
 });
