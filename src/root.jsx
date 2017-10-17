@@ -1,5 +1,5 @@
 import Styles from "./root.less";
-import moment from 'moment';
+import Moment from 'moment';
 
 
 class WeatherForecast extends React.Component {
@@ -23,15 +23,15 @@ class WeatherForecast extends React.Component {
 
         return response
       })
-      .then(d => d.json())
-      .then(d => {
-    if(d.cod != '200'){
-      throw Error(d.message);
+      .then(res => res.json())
+      .then(res => {
+    if(res.cod != '200'){
+      throw Error(res.message);
     }
 
         this.setState({
-          cityName: d.city.name,
-          weatherList: d.list
+          cityName: res.city.name,
+          weatherList: res.list
         })
       })
   }
@@ -39,18 +39,19 @@ class WeatherForecast extends React.Component {
   render() {
     return (
       <div>
+      <h2>Weather Forecast for {this.state.cityName}</h2>
         {this.state.weatherList.length > 1 ?
           <div className={Styles.weatherForecast}>
-              <h2>Weather Forecast for {this.state.cityName}</h2>
+              
               <ForecastCard forecast={this.state.weatherList[0]}/>
               <ForecastCard forecast={this.state.weatherList[8]}/>
               <ForecastCard forecast={this.state.weatherList[16]}/>
               <ForecastCard forecast={this.state.weatherList[24]}/>
               <ForecastCard forecast={this.state.weatherList[32]}/>
-            </div>
+          </div>
             : <p>Loading...</p>
           }
-        </div>
+      </div>
     )
   }
 }
@@ -59,7 +60,7 @@ class ForecastCard extends React.Component {
     render() {
       return (
         <div className={Styles.forecastCard}>
-          <p>{moment.unix(this.props.forecast.dt).format('dddd MM/DD')}</p>
+          <p>{Moment.unix(this.props.forecast.dt).format('dddd MM/DD')}</p>
           <ForecastIcon iconCode={this.props.forecast.weather[0].icon}/>
           <p>{this.props.forecast.weather[0].description}</p>
           <p>{this.props.forecast.main.temp}&#176; F</p>
